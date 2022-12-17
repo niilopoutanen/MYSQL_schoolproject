@@ -3,11 +3,13 @@
 <html>
     <head>
         <title>Hotelli-tietokannan käyttöliittymä</title>
-        <script src="usertransfer.js"></script>
+        <script src="scripts.js"></script>
         <link rel="stylesheet" href="styles.css"/>
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
     </head>
     <body>
+        <div id="popup_bg"></div>
+        <div id="popup"></div>
         <nav>
             <div class="navbar_side">
             </div>
@@ -17,7 +19,7 @@
             <div class="navbar_side">
                 <button id="register_btn" onclick="MoveParamsToNew(window.location.search, 'register.php')">Luo tili</button>
                 <button id="login_btn" class="primarybtn" onclick="MoveParamsToNew(window.location.search, 'login.php')">Kirjaudu</button>
-                <button id="myaccount">Tili</button>
+                <button id="myaccount" onclick="TogglePopup()">Tili</button>
             </div>
 
         </nav>
@@ -76,7 +78,6 @@
             <p>© 2022 Niilo Poutanen</p>
         </footer>
         <script>
-            console.log(window.location.search);
             const queryString = window.location.search;
             const urlParams = new URLSearchParams(queryString);
             if(urlParams.get('user') == null) {
