@@ -1,4 +1,18 @@
+<?php
+    include("sqlcommands.php");
+    if($_SERVER["REQUEST_METHOD"] == "POST") {
+        $sql = "DELETE FROM reservation WHERE reservation_ID = '" . $_POST["reservationID"] . "'";
+        if ($conn->query($sql) === TRUE) {
+            $newurl = "index.php?user=" . $_POST["user"]; 
+            header('Location: '.$newurl);
+          } else {
+            echo "Error deleting record: " . $conn->error;
+        }
+        $conn->close();
+    }
 
+
+?>
 <!DOCTYPE html>
 <html>
     <head>
@@ -8,8 +22,67 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
     </head>
     <body>
-        <div id="popup_bg"></div>
-        <div id="popup"></div>
+        <div id="popup_bg" style="display:none;"></div>
+        <div id="popup" style="display:none;">
+            <div id="popup_header">
+                <?php
+                    include("sqlcommands.php");
+
+                    $sql = "SELECT concat(first_name, ' ', last_name) as fullname, email, phone FROM guest WHERE guest_ID = '" . $_GET["user"] . "'";
+                    $result = $conn->query($sql);
+    
+                    if ($result->num_rows > 0) {
+    
+                        while($row = $result->fetch_assoc()) {
+                            echo '
+                                <h2>'. $row["fullname"]. '</h2>
+                                <h4>'. $row["email"]. '</h4>
+                                <h4>'. $row["phone"]. '</h4>
+                            ';
+                        }
+                    } 
+                    else {
+                        echo "0 results";
+                    }
+    
+                    $conn->close();
+    
+                ?>
+
+            </div>
+            <h4>Varaukset:</h4>
+            <div id="reservationscontainer">
+                <?php
+                    include("sqlcommands.php");  
+                    $userid = $_GET["user"];
+                    if($userid != null){
+                        $userdatasql = "SELECT hotel.hotel_name, reservation.reservation_start, reservation.reservation_end, reservation.reservation_ID FROM reservation LEFT JOIN hotel ON reservation.hotel_ID = hotel.hotel_ID WHERE guest_ID = $userid;";
+                        $userdataresult = $conn->query($userdatasql);
+                        if ($userdataresult->num_rows > 0) {
+                            while($row = $userdataresult->fetch_assoc()) {
+                                echo '
+                                <div class="reservationpanel" id="'. $row["reservation_ID"]. '">
+                                <h3>'. $row["hotel_name"]. '</h3>
+                                <p>'. $row["reservation_start"]. ' - '. $row["reservation_end"]. '</p>
+                                <form action="index.php" method="post" autocomplete="off">
+                                <input type="hidden" name="reservationID" value="'. $row["reservation_ID"]. '">
+                                <input type="hidden" name="user" value="'. $userid. '">
+                                <button type="submit" style="margin-left:auto;" class="primarybtn">X</button>
+                                </form>
+                                </div>
+                                ';
+                            }
+                        } 
+                        else {
+                            echo "Ei varauksia.";
+                        }
+                    }
+                
+                ?>
+            </div>
+
+            <button style="margin-top:auto; min-height:35px" class="primarybtn" onclick="TogglePopup()">Sulje</button>
+        </div>
         <nav>
             <div class="navbar_side">
             </div>
@@ -25,16 +98,8 @@
         </nav>
         <main>
             <?php
-                $servername = "localhost";
-                $username = "root";
-                $password = "";
-                $dbname = "Hotel";
+                include("sqlcommands.php");
 
-                $conn = new mysqli($servername, $username, $password, $dbname);
-
-                if ($conn->connect_error) {
-                die("Connection failed: " . $conn->connect_error);
-                }
                 $sql = "select room.availability, room_ID, room_img, room_number, hotel.hotel_name, hotel.city_name from room right join hotel on room.hotel_ID = hotel.hotel_ID;";
                 $result = $conn->query($sql);
 
@@ -55,27 +120,18 @@
                         </div>';
                         }
                 }
-                } else {
-                echo "0 results";
+                } 
+                else {
+                    echo "0 results";
                 }
+
                 $conn->close();
 
 
             ?>
-
-            <!-- <div class="hotelcard">
-                <img src="https://www.rantapallo.fi/wp-content/uploads/2020/01/suomi-helsinki-original-sokos-hotel-tripla-hotelli-ik-2.jpg"/>
-                <div class="headerdiv">
-                    <div>
-                        <h2>Hotelli 1</h2>
-                        <p>Katu 1, Kaupunki 1</p>
-                    </div>
-                    <button>Varaa</button>
-                </div>
-            </div> -->
         </main>
         <footer>
-            <p>© 2022 Niilo Poutanen</p>
+            <h3>© 2022 Niilo Poutanen</h3>
         </footer>
         <script>
             const queryString = window.location.search;

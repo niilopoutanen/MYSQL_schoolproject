@@ -1,18 +1,16 @@
 function MoveParamsToNew(query, newlink){
-    var toTransfer = newlink + query;
-    window.location.href = toTransfer;
+    window.location.href = newlink + query;
 }
 
 function TogglePopup(){
     var popup = document.getElementById("popup");
     var popupBG = document.getElementById("popup_bg");
-    console.log(popup.style.display);
-    if(popup.style.display == "block"){
+    if(popupBG.style.display == "block"){
         popup.style.display = "none";
         popupBG.style.display = "none";
     }
-    else if(popup.style.display == "none"){
-        popup.style.display = "block";
+    else if(popupBG.style.display == "none"){
+        popup.style.display = "flex";
         popupBG.style.display = "block";
     }
 }

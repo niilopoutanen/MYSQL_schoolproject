@@ -1,16 +1,5 @@
 <?php
-    $servername = "localhost";
-    $username = "root";
-    $password = "";
-    $dbname = "Hotel";
-
-    $conn = new mysqli($servername, $username, $password, $dbname);
-
-    if ($conn->connect_error) {
-    die("Connection failed: " . $conn->connect_error);
-    }
-
-
+    include("sqlcommands.php");
     if($_SERVER["REQUEST_METHOD"] == "POST") {
         $create_account_sql = "INSERT INTO guest (first_name, last_name, email, phone) 
         VALUES ('" . $_POST["firstname"] . "', '" . $_POST["lastname"] . "', '" . $_POST["email"] . "', '" . $_POST["phone"] . "')";
@@ -53,7 +42,7 @@
                 <input type="text" name="firstname" placeholder="Etunimi" required="required"/>
                 <input type="text" name="lastname" placeholder="Sukunimi" required="required"/>
                 <input type="text" name="email" placeholder="Sähköposti" required="required"/>
-                <input type="text" name="phone" placeholder="Puhelinnumero" required="required"/>
+                <input type="tel" name="phone" placeholder="Puhelinnumero" required="required"/>
                 <button type="submit">Luo</button>
             </form>
         </main>
